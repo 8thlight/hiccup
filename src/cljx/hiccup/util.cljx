@@ -1,8 +1,8 @@
 (ns hiccup.util
   "Utility functions for Hiccup."
   (:require [clojure.string :as str])
-  (:import java.net.URI
-           java.net.URLEncoder))
+  #+clj (:import java.net.URI java.net.URLEncoder)
+  )
 
 (def ^:dynamic *base-url* nil)
 
@@ -14,14 +14,20 @@
      ~@body))
 
 (defprotocol ToString
-  (^String to-str [x] "Convert a value into a string."))
+  (to-str [x] "Convert a value into a string."))
 
 (extend-protocol ToString
-  clojure.lang.Keyword
+  #+clj clojure.lang.Keyword
+  #+cljs cljs.core.Keyword
   (to-str [k] (name k))
-  clojure.lang.Ratio
-  (to-str [r] (str (float r)))
-  java.net.URI
+
+  #+clj clojure.lang.Ratio
+  #+clj (to-str [r] (str (float r))
+  )
+
+
+  #+clj java.net.URI
+  #+clj
   (to-str [u]
     (if (or (.getHost u)
             (nil? (.getPath u))
@@ -31,29 +37,33 @@
         (if (.endsWith base "/")
           (str (subs base 0 (dec (count base))) u)
           (str base u)))))
-  Object
-  (to-str [x] (str x))
+
+  #+clj Object
+  #+clj (to-str [x] (str x))
+
   nil
   (to-str [_] ""))
 
-(defn ^String as-str
+(defn as-str
   "Converts its arguments into a string using to-str."
   [& xs]
   (apply str (map to-str xs)))
 
 (defprotocol ToURI
-  (^URI to-uri [x] "Convert a value into a URI."))
+  (to-uri [x] "Convert a value into a URI."))
 
+#+clj
 (extend-protocol ToURI
   java.net.URI
   (to-uri [u] u)
+
   String
   (to-uri [s] (URI. s)))
 
 (defn escape-html
   "Change special characters into HTML character entities."
   [text]
-  (.. ^String (as-str text)
+  (.. (as-str text)
     (replace "&"  "&amp;")
     (replace "<"  "&lt;")
     (replace ">"  "&gt;")
@@ -70,6 +80,7 @@
 (defprotocol URLEncode
   (url-encode [x] "Turn a value into a URL-encoded string."))
 
+#+clj
 (extend-protocol URLEncode
   String
   (url-encode [s] (URLEncoder/encode s *encoding*))

@@ -15,16 +15,16 @@
 
   :jar-exclusions [#"\.cljx"]
 
-  :cljx {:builds [{:source-paths ["src"]
+  :cljx {:builds [{:source-paths ["src/cljx"]
                    :output-path "target/generated/src/clj"
                    :rules :clj}
-                  {:source-paths ["src"]
+                  {:source-paths ["src/cljx"]
                    :output-path "target/generated/src/cljs"
                    :rules :cljs}
-                  {:source-paths ["test"]
+                  {:source-paths ["test/cljx"]
                    :output-path "target/generated/test/clj"
                    :rules :clj}
-                  {:source-paths ["test"]
+                  {:source-paths ["test/cljx"]
                    :output-path "target/generated/test/cljs"
                    :rules :cljs}]}
 

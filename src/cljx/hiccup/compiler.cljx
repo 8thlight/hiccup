@@ -1,6 +1,7 @@
 (ns hiccup.compiler
   "Internal functions for compilation."
-  (:require [hiccup.util :refer [as-str escape-html]])
+  (:require [hiccup.util    :refer [as-str escape-html]]
+            [clojure.string :as str])
   #+clj (:import [clojure.lang IPersistentVector ISeq Named])
   )
 
@@ -54,15 +55,13 @@
     (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
   (let [[_ tag id class] (re-matches re-tag (as-str tag))
         tag-attrs        {:id id
-                          :class (if class (.replace ^String class "." " "))}
+                          :class (if class (str/replace class "." " "))}
         map-attrs        (first content)]
     (if (map? map-attrs)
       [tag (merge-attributes tag-attrs map-attrs) (next content)]
       [tag tag-attrs content])))
 
-(defprotocol HtmlRenderer
-  (render-html [this]
-    "Turn a Clojure data type into a string of HTML."))
+(declare render-html)
 
 (defn- render-element
   "Render an element vector as a HTML element."
@@ -102,7 +101,7 @@
   attributes."
   [attrs]
   (if (some unevaluated? (mapcat identity attrs))
-    `(#'render-attr-map ~attrs)
+    `(render-attr-map ~attrs)
     (render-attr-map attrs)))
 
 (defn- form-name
@@ -128,7 +127,7 @@
 
 (defmethod compile-form :default
   [expr]
-  `(#'render-html ~expr))
+  `(render-html ~expr))
 
 ;(defn- not-hint?
 ;  "True if x is not hinted to be the supplied type."
@@ -205,11 +204,11 @@
        (if (map? ~attrs-sym)
          ~(if (or content (container-tags tag))
             `(str ~(str "<" tag)
-                  (#'render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
+                  (render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
                   ~@(compile-seq content)
                   ~(str "</" tag ">"))
             `(str ~(str "<" tag)
-                  (#'render-attr-map (merge ~tag-attrs ~attrs-sym))
+                  (render-attr-map (merge ~tag-attrs ~attrs-sym))
                   ~(end-tag)))
          ~(if (or attrs (container-tags tag))
             `(str ~(str "<" tag (render-attr-map tag-attrs) ">")
@@ -219,7 +218,7 @@
 
 (defmethod compile-element :default
   [element]
-  `(#'render-element
+  `(render-element
      [~(first element)
       ~@(for [x (rest element)]
           (if (vector? x)
@@ -236,7 +235,7 @@
             ;(hint? expr String) expr
             ;(hint? expr Number) expr
             (seq? expr) (compile-form expr)
-            :else `(#'render-html ~expr)))))
+            :else `(render-html ~expr)))))
 
 (defn- collapse-strs
   "Collapse nested str expressions into one, where possible."

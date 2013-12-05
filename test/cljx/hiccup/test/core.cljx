@@ -9,20 +9,20 @@
                    [hiccup.core        :refer [html]])
   (:require        [hiccup.core]))
 
-;(deftest tag-names
-;  (testing "basic tags"
-;    (is (= (html [:div]) "<div></div>"))
-;    (is (= (html ["div"]) "<div></div>"))
-;    (is (= (html ['div]) "<div></div>")))
-;  (testing "tag syntax sugar"
-;    (is (= (html [:div#foo]) "<div id=\"foo\"></div>"))
-;    (is (= (html [:div.foo]) "<div class=\"foo\"></div>"))
-;    (is (= (html [:div.foo (str "bar" "baz")])
-;           "<div class=\"foo\">barbaz</div>"))
-;    (is (= (html [:div.a.b]) "<div class=\"a b\"></div>"))
-;    (is (= (html [:div.a.b.c]) "<div class=\"a b c\"></div>"))
-;    (is (= (html [:div#foo.bar.baz])
-;           "<div class=\"bar baz\" id=\"foo\"></div>"))))
+(deftest tag-names
+  (testing "basic tags"
+    (is (= (html [:div]) "<div></div>"))
+    (is (= (html ["div"]) "<div></div>"))
+    (is (= (html ['div]) "<div></div>")))
+  (testing "tag syntax sugar"
+    (is (= (html [:div#foo]) "<div id=\"foo\"></div>"))
+    (is (= (html [:div.foo]) "<div class=\"foo\"></div>"))
+    (is (= (html [:div.foo (str "bar" "baz")])
+           "<div class=\"foo\">barbaz</div>"))
+    (is (= (html [:div.a.b]) "<div class=\"a b\"></div>"))
+    (is (= (html [:div.a.b.c]) "<div class=\"a b c\"></div>"))
+    (is (= (html [:div#foo.bar.baz])
+           "<div class=\"bar baz\" id=\"foo\"></div>"))))
 
 ;(deftest tag-contents
 ;  (testing "empty tags"

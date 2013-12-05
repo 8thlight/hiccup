@@ -1,8 +1,14 @@
 (ns hiccup.util
   "Utility functions for Hiccup."
-  (:require [clojure.string :as str])
-  #+clj (:import java.net.URI java.net.URLEncoder)
-  )
+  (:require [clojure.string  :as str]
+            [hiccup.abstr    :refer [-to-str -to-uri -url-encode]]
+            [hiccup.platform :refer [extend-to-string-with-uri-type
+                                     make-uri
+                                     uri-encode
+                                     uri-has-domain?
+                                     uri-get-path
+                                     starts-with
+                                     ends-with]]))
 
 (def ^:dynamic *base-url* nil)
 
@@ -13,52 +19,30 @@
   `(binding [*base-url* ~base-url]
      ~@body))
 
-(defprotocol ToString
-  (to-str [x] "Convert a value into a string."))
+(defn- uri-to-str [u base-url]
+  (if (or (uri-has-domain? u)
+          (nil? (uri-get-path u))
+          (not (-> (uri-get-path u) (starts-with "/"))))
+    (str u)
+    (let [base (str base-url)]
+      (if (ends-with base "/")
+        (str (subs base 0 (dec (count base))) u)
+        (str base u)))))
 
-(extend-protocol ToString
-  #+clj clojure.lang.Keyword
-  #+cljs cljs.core.Keyword
-  (to-str [k] (name k))
+(extend-to-string-with-uri-type #(uri-to-str % *base-url*))
 
-  #+clj clojure.lang.Ratio
-  #+clj (to-str [r] (str (float r))
-  )
-
-
-  #+clj java.net.URI
-  #+clj
-  (to-str [u]
-    (if (or (.getHost u)
-            (nil? (.getPath u))
-            (not (-> (.getPath u) (.startsWith "/"))))
-      (str u)
-      (let [base (str *base-url*)]
-        (if (.endsWith base "/")
-          (str (subs base 0 (dec (count base))) u)
-          (str base u)))))
-
-  #+clj Object
-  #+clj (to-str [x] (str x))
-
-  nil
-  (to-str [_] ""))
+(def
+  ^{:doc "Convert a value into a String."}
+  to-str -to-str)
 
 (defn as-str
   "Converts its arguments into a string using to-str."
   [& xs]
   (apply str (map to-str xs)))
 
-(defprotocol ToURI
-  (to-uri [x] "Convert a value into a URI."))
-
-#+clj
-(extend-protocol ToURI
-  java.net.URI
-  (to-uri [u] u)
-
-  String
-  (to-uri [s] (URI. s)))
+(def
+  ^{:doc "Convert a value into a URI."}
+  to-uri -to-uri)
 
 (defn escape-html
   "Change special characters into HTML character entities."
@@ -69,28 +53,18 @@
     (replace ">"  "&gt;")
     (replace "\"" "&quot;")))
 
-(def ^:dynamic *encoding* "UTF-8")
-
 (defmacro with-encoding
   "Sets a default encoding for URL encoding strings. Defaults to UTF-8."
   [encoding & body]
   `(binding [*encoding* ~encoding]
      ~@body))
 
-(defprotocol URLEncode
-  (url-encode [x] "Turn a value into a URL-encoded string."))
+(def ^:dynamic *encoding* "UTF-8")
 
-#+clj
-(extend-protocol URLEncode
-  String
-  (url-encode [s] (URLEncoder/encode s *encoding*))
-  java.util.Map
-  (url-encode [m]
-    (str/join "&"
-      (for [[k v] m]
-        (str (url-encode k) "=" (url-encode v)))))
-  Object
-  (url-encode [x] (url-encode (to-str x))))
+(defn url-encode
+  "Turn a value into a URL-encoded string."
+  [s]
+  (-url-encode s *encoding*))
 
 (defn url
   "Creates a URI instance from a variable list of arguments and an optional

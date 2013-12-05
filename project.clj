@@ -5,9 +5,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2080"]]
 
-  :plugins [[codox "0.6.4"]
-            [lein-cljsbuild "1.0.0"]
-            [com.keminglabs/cljx "0.3.1"]]
+  :plugins [[codox "0.6.4"]]
 
   :codox {:exclude [hiccup.compiler]
           :src-dir-uri "http://github.com/weavejester/hiccup/blob/1.0.4"
@@ -37,13 +35,15 @@
   :cljsbuild ~(let [test-command ["bin/cljs-test" "target/unit-test.js"]]
                 {:builds {:dev {:source-paths ["target/generated/src/cljs" "src/cljs" "target/generated/test/cljs" "test/cljs"]
                                 :compiler {:output-to "target/unit-test.js"
-                                           :optimizations :whitespace
                                            :pretty-print true}
                                 :notify-command test-command}}
                  :test-commands {"unit" test-command}})
 
   :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.3.1"]
-                                  [prismatic/cljs-test "0.0.6"]]}
+                                  [lein-cljsbuild "1.0.0"]
+                                  [com.cemerick/clojurescript.test "0.2.1"]]
+                   :plugins [[lein-cljsbuild "1.0.0"]
+                             [com.keminglabs/cljx "0.3.1"]]}
              :1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}})

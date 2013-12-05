@@ -1,6 +1,11 @@
+;#+clj
 (ns hiccup.test.def
-  (:use clojure.test
-        hiccup.def))
+  (:require [clojure.test :refer :all]
+            [hiccup.def   :refer :all]))
+;#+cljs
+;(ns hiccup.test.def
+;  (:require-macros [cemerick.cljs.test :refer [is deftest testing]]
+;                   [hiccup.def         :refer [defhtml defelem]]))
 
 (deftest test-defhtml
   (testing "basic html function"

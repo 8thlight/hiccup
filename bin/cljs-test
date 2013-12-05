@@ -1,17 +1,28 @@
 #! /usr/bin/env phantomjs
 
-var fs = require("fs");
 var p = require('webpage').create();
+var fs = require('fs');
 var sys = require('system');
 
 p.onConsoleMessage = function (x) {
-    fs.write("/dev/stdout", x, "w");
+  var line = x.toString();
+  if (line !== "[NEWLINE]") {
+    console.log(line.replace(/\[NEWLINE\]/g, "\n"));
+  }
 };
 
 p.injectJs(sys.args[1]);
 
-var result = p.evaluate(function () {
-    return cljs_test.core.run_tests_BANG_();
+p.evaluate(function () {
+  cemerick.cljs.test.set_print_fn_BANG_(function(x) {
+    console.log(x.replace(/\n/g, "[NEWLINE]")); // since console.log *itself* adds a newline
+  });
 });
 
-phantom.exit(result);
+var success = p.evaluate(function () {
+  var results = cemerick.cljs.test.run_all_tests();
+  console.log(results);
+  return cemerick.cljs.test.successful_QMARK_(results);
+});
+
+phantom.exit(success ? 0 : 1);

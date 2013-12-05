@@ -1,2 +1,2 @@
-(ns hiccup.test.util
-  (:require [cljs-test.core]))
+(ns hiccup.test.test-helper
+  (:require [cemerick.cljs.test]))

@@ -3,6 +3,7 @@
             [clojure.string :as str])
   (:import java.net.URI
            java.net.URLEncoder))
+
 (defn make-uri [s]
   (java.net.URI. s))
 

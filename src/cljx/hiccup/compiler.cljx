@@ -1,7 +1,8 @@
 (ns hiccup.compiler
   "Internal functions for compilation."
-  (:use hiccup.util)
-  (:import [clojure.lang IPersistentVector ISeq Named]))
+  (:require [hiccup.util :refer [as-str escape-html]])
+  #+clj (:import [clojure.lang IPersistentVector ISeq Named])
+  )
 
 (def ^:dynamic *html-mode* :xml)
 
@@ -40,7 +41,7 @@
     "footer" "form" "h1" "h2" "h3" "h4" "h5" "h6" "head" "header" "hgroup" "html"
     "i" "iframe" "label" "li" "nav" "object" "ol" "option" "pre" "section" "select"
     "script" "span" "strong" "style" "table" "textarea" "title" "ul" "video"})
- 
+
 (defn- merge-attributes [{:keys [id class]} map-attrs]
   (->> map-attrs
        (merge (if id {:id id}))
@@ -49,7 +50,7 @@
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
-  (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
+  #+clj (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
   (let [[_ tag id class] (re-matches re-tag (as-str tag))
         tag-attrs        {:id id
@@ -73,22 +74,16 @@
            "</" tag ">")
       (str "<" tag (render-attr-map attrs) (end-tag)))))
 
-(extend-protocol HtmlRenderer
-  IPersistentVector
-  (render-html [this]
-    (render-element this))
-  ISeq
-  (render-html [this]
-    (apply str (map render-html this)))
-  Named
-  (render-html [this]
-    (name this))
-  Object
-  (render-html [this]
-    (str this))
-  nil
-  (render-html [this]
-    ""))
+(defn- named? [thing]
+  (satisfies? INamed thing))
+
+(defn render-html [thing]
+  (cond
+    (vector? thing) (render-element thing)
+    (seq? thing) (map render-html thing)
+    (named? thing) (name thing)
+    (nil? thing) ""
+    :else (str thing)))
 
 (defn- unevaluated?
   "True if the expression has not been evaluated."
@@ -130,17 +125,17 @@
   [expr]
   `(#'render-html ~expr))
 
-(defn- not-hint?
-  "True if x is not hinted to be the supplied type."
-  [x type]
-  (if-let [hint (-> x meta :tag)]
-    (not (isa? (eval hint) type))))
+;(defn- not-hint?
+;  "True if x is not hinted to be the supplied type."
+;  [x type]
+;  (if-let [hint (-> x meta :tag)]
+;    (not (isa? (eval hint) type))))
 
-(defn- hint?
-  "True if x is hinted to be the supplied type."
-  [x type]
-  (if-let [hint (-> x meta :tag)]
-    (isa? (eval hint) type)))
+;(defn- hint?
+;  "True if x is hinted to be the supplied type."
+;  [x type]
+;  (if-let [hint (-> x meta :tag)]
+;    (isa? (eval hint) type)))
 
 (defn- literal?
   "True if x is a literal value that can be rendered as-is."
@@ -154,7 +149,8 @@
   [x]
   (or (= (form-name x) "for")
       (not (unevaluated? x))
-      (not-hint? x java.util.Map)))
+      ;(not-hint? x java.util.Map)
+      ))
 
 (defn- element-compile-strategy
   "Returns the compilation strategy to use for a given element."
@@ -179,9 +175,9 @@
   {:private true}
   element-compile-strategy)
 
-(defmethod compile-element ::all-literal
-  [element]
-  (render-element (eval element)))
+;(defmethod compile-element ::all-literal
+;  [element]
+;  (render-element (eval element)))
 
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
@@ -232,8 +228,8 @@
            (cond
             (vector? expr) (compile-element expr)
             (literal? expr) expr
-            (hint? expr String) expr
-            (hint? expr Number) expr
+            ;(hint? expr String) expr
+            ;(hint? expr Number) expr
             (seq? expr) (compile-form expr)
             :else `(#'render-html ~expr)))))
 

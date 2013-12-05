@@ -74,6 +74,11 @@
            "</" tag ">")
       (str "<" tag (render-attr-map attrs) (end-tag)))))
 
+#+clj
+(defn- named? [thing]
+  (satisfies? Named thing))
+
+#+cljs
 (defn- named? [thing]
   (satisfies? INamed thing))
 

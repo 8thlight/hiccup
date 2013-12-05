@@ -1,6 +1,12 @@
+#+clj
 (ns hiccup.middleware
   "Ring middleware functions for Hiccup."
-  (:use hiccup.util))
+  (:require [hiccup.util :refer [with-base-url]]))
+
+#+cljs
+(ns hiccup.middleware
+  "Ring middleware functions for Hiccup."
+  (:require-macros [hiccup.util :refer [with-base-url]]))
 
 (defn wrap-base-url
   "Ring middleware that wraps the handler in the with-base-url function. The

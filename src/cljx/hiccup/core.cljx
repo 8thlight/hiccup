@@ -67,13 +67,17 @@
 
 #+clj
 (defn- named? [thing]
-  (satisfies? Named thing))
+(prn "here")
+(prn thing)
+(prn "here")
+  (and (not (nil? thing))
+       (satisfies? Named thing)))
 
 #+cljs
 (defn- named? [thing]
   (satisfies? INamed thing))
 
-(defn- render-html [thing]
+(defn render-html [thing]
   (cond
     (nil? thing) ""
     (string? thing) thing
@@ -114,7 +118,7 @@
   [expr]
   `(render-html ~expr))
 
-(defn- render-element
+(defn render-element
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)]
@@ -181,13 +185,12 @@
 
 (defmacro html
   "Render Clojure data structures to a string of HTML."
-  [& content]
-  ;(if-let [mode (and (map? options) (:mode options))]
-  ;  (binding [*html-mode* mode]
-  ;    `(binding [*html-mode* ~mode]
-  ;       ~(apply compile-html content)))
-  ;  (apply compile-html options content))
-  `(str ~@(compile-seq content))
+  [options & content]
+  (if-let [mode (and (map? options) (:mode options))]
+    (binding [*html-mode* mode]
+      `(binding [*html-mode* ~mode]
+         (str ~@(compile-seq content))))
+    `(str ~@(compile-seq (cons options content))))
     )
 
 (def ^{:doc "Alias for hiccup.util/escape-html"}

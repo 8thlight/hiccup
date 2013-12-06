@@ -179,9 +179,9 @@
   {:private true}
   element-compile-strategy)
 
-;(defmethod compile-element ::all-literal
-;  [element]
-;  (render-element (eval element)))
+(defmethod compile-element ::all-literal
+  [element]
+  (render-element ~@element))
 
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
@@ -253,4 +253,4 @@
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
   [& content]
-  (collapse-strs `(str ~@(compile-seq content))))
+  (collapse-strs `(str (compile-seq content))))

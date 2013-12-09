@@ -2,7 +2,6 @@
   :description "A fast library for rendering HTML in Clojure"
   :url "http://github.com/weavejester/hiccup"
 
-  :jar-exclusions [#"\.cljx"]
   :source-paths   ["target/generated/src/clj" "src/clj" ]
   :resource-paths ["target/generated/src/cljs" "src/cljs"]
   :test-paths     ["target/generated/test/clj" "test/clj"]

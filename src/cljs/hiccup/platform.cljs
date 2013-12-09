@@ -11,7 +11,7 @@
   (= (str one) (str two)))
 
 (defn uri-encode [s encoding]
-  (js/encodeURIComponent s))
+  (goog.string/urlEncode s))
 
 (defn uri-has-domain? [u]
   (.hasDomain u))

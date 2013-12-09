@@ -21,7 +21,10 @@
     (is (= (html [:div.a.b]) "<div class=\"a b\"></div>"))
     (is (= (html [:div.a.b.c]) "<div class=\"a b c\"></div>"))
     (is (= (html [:div#foo.bar.baz])
-           "<div class=\"bar baz\" id=\"foo\"></div>"))))
+           "<div class=\"bar baz\" id=\"foo\"></div>")))
+  (testing "calling a function"
+    (defn div-foo [] [:div#foo])
+    (is (= (html (div-foo)) "<div id=\"foo\"></div>"))))
 
 (deftest tag-contents
   (testing "empty tags"

@@ -1,7 +1,7 @@
 #+clj
 (ns hiccup.middleware
   "Ring middleware functions for Hiccup."
-  (:require [hiccup.util :refer [with-base-url]]))
+  (:use [hiccup.util :only [with-base-url]]))
 
 #+cljs
 (ns hiccup.middleware
@@ -15,4 +15,4 @@
   [handler & [base-url]]
   (fn [request]
     (with-base-url (or base-url (:context request))
-      (handler request))))
+                   (handler request))))

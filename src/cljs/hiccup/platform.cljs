@@ -1,8 +1,8 @@
 (ns hiccup.platform
-  (:require [clojure.string  :as str]
-            [goog.Uri]
+  (:require [goog.Uri]
             [goog.string]
-            [hiccup.abstr :refer [ToString -to-str ToURI -to-uri URLEncode -url-encode]]))
+            [clojure.string :as str]
+            [hiccup.abstr   :refer [ToString -to-str ToURI -to-uri URLEncode -url-encode]]))
 
 (defn make-uri [s]
   (goog.Uri. s))
@@ -64,3 +64,5 @@
   string
   (-to-uri [s] (make-uri s)))
 
+(defn- named? [thing]
+  (satisfies? INamed thing))

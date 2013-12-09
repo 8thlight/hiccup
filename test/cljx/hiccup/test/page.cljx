@@ -1,7 +1,17 @@
+#+clj
 (ns hiccup.test.page
   (:use clojure.test
-        hiccup.page)
-  (:import java.net.URI))
+        hiccup.page
+        hiccup.core
+        hiccup.platform))
+
+#+cljs
+(ns hiccup.test.page
+  (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
+                   [hiccup.page        :refer [xhtml html5 html4]]
+                   [hiccup.core        :refer [html]])
+  (:require        [hiccup.page        :refer [include-js include-css]]
+                   [hiccup.platform    :refer [make-uri]]))
 
 (deftest html4-test
   (is (= (html4 [:body [:p "Hello" [:br] "World"]])
@@ -61,7 +71,7 @@
            (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 "<!DOCTYPE html>\n"
                 "<html xml:og=\"http://ogp.me/ns#\" xmlns=\"http://www.w3.org/1999/xhtml\">"
-                "<body>Hello World</body></html>")))    
+                "<body>Hello World</body></html>")))
     (is (= (html5 {:xml? true, :lang "en"
                    "xml:og" "http://ogp.me/ns#"} [:body "Hello World"])
            (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -70,15 +80,15 @@
                 "<body>Hello World</body></html>")))))
 
 (deftest include-js-test
-  (is (= (include-js "foo.js")
-         (list [:script {:type "text/javascript", :src (URI. "foo.js")}])))
-  (is (= (include-js "foo.js" "bar.js")
-         (list [:script {:type "text/javascript", :src (URI. "foo.js")}]
-               [:script {:type "text/javascript", :src (URI. "bar.js")}]))))
+  (is (= (html (include-js "foo.js"))
+         (html (list [:script {:type "text/javascript", :src (make-uri "foo.js")}]))))
+  (is (= (html (include-js "foo.js" "bar.js"))
+         (html (list [:script {:type "text/javascript", :src (make-uri "foo.js")}]
+                     [:script {:type "text/javascript", :src (make-uri "bar.js")}])))))
 
 (deftest include-css-test
-  (is (= (include-css "foo.css")
-         (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}])))
-  (is (= (include-css "foo.css" "bar.css")
-         (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}]
-               [:link {:type "text/css", :href (URI. "bar.css"), :rel "stylesheet"}]))))
+  (is (= (html (include-css "foo.css"))
+         (html (list [:link {:type "text/css", :href (make-uri "foo.css"), :rel "stylesheet"}]))))
+  (is (= (html (include-css "foo.css" "bar.css"))
+         (html (list [:link {:type "text/css", :href (make-uri "foo.css"), :rel "stylesheet"}]
+                     [:link {:type "text/css", :href (make-uri "bar.css"), :rel "stylesheet"}])))))

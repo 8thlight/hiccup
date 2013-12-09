@@ -1,14 +1,14 @@
 (ns hiccup.util
   "Utility functions for Hiccup."
-  (:require [clojure.string  :as str]
-            [hiccup.abstr    :refer [-to-str -to-uri -url-encode]]
-            [hiccup.platform :refer [extend-to-string-with-uri-type
-                                     make-uri
-                                     uri-encode
-                                     uri-has-domain?
-                                     uri-get-path
-                                     starts-with
-                                     ends-with]]))
+  (:use     [hiccup.abstr    :only [-to-str -to-uri -url-encode]]
+            [hiccup.platform :only [extend-to-string-with-uri-type
+                                    make-uri
+                                    uri-encode
+                                    uri-has-domain?
+                                    uri-get-path
+                                    starts-with
+                                    ends-with]])
+  (:require [clojure.string  :as str]))
 
 (def ^:dynamic *base-url* nil)
 

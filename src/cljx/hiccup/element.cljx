@@ -1,7 +1,14 @@
+#+clj
 (ns hiccup.element
   "Functions for creating HTML elements."
-  (:use hiccup.def
-        hiccup.util))
+  (:use [hiccup.def  :only [defelem]]
+        [hiccup.util :only [to-uri]]))
+
+#+cljs
+(ns hiccup.element
+  "Functions for creating HTML elements."
+  (:require-macros [hiccup.def  :refer [defelem]])
+  (:require        [hiccup.util :refer [to-uri]]))
 
 (defn javascript-tag
   "Wrap the supplied javascript up in script tags and a CDATA section."

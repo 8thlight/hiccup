@@ -1,7 +1,13 @@
+#+clj
 (ns hiccup.form
   "Functions for generating HTML forms and input fields."
-  (:use hiccup.def
-        hiccup.util))
+  (:use [hiccup.def  :only [defelem]]
+        [hiccup.util :only [as-str to-uri escape-html]]))
+
+#+cljs
+(ns hiccup.form
+  (:require-macros [hiccup.def :refer [defelem]])
+  (:require        [hiccup.util :refer [as-str to-uri escape-html]]))
 
 (def ^:dynamic *group* [])
 

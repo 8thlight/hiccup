@@ -6,8 +6,7 @@
 #+cljs
 (ns hiccup.test.core
   (:require-macros [cemerick.cljs.test :refer [is deftest testing are]]
-                   [hiccup.core        :refer [html]])
-  (:require        [hiccup.core]))
+                   [hiccup.core        :refer [html]]))
 
 (deftest tag-names
   (testing "basic tags"
@@ -97,6 +96,10 @@
            "<img src=\"/foo/bar\" />"))
     (is (= (html [:div {:id (str "a" "b")} (str "foo")])
            "<div id=\"ab\">foo</div>")))
+
+  (testing "literals"
+    (is (= (html 1) "1")))
+
   #+clj
   (testing "type hints"
     (let [string "x"]

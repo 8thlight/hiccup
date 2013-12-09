@@ -1,8 +1,15 @@
+#+clj
 (ns hiccup.page
   "Functions for setting up HTML pages."
-  (:use hiccup.core 
-        hiccup.util
-        hiccup.def))
+  (:use [hiccup.core :only [html]]
+        [hiccup.util :only [to-uri]]
+        [hiccup.def  :only [defelem]]))
+
+#+cljs
+(ns hiccup.page
+  (:require-macros [hiccup.def  :refer [defelem]]
+                   [hiccup.core :refer [html]])
+  (:require        [hiccup.util :refer [to-uri]]))
 
 (def doctype
   {:html4

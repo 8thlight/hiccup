@@ -1,8 +1,9 @@
 (ns hiccup.platform
-  (:require [hiccup.abstr :refer [ToString -to-str ToURI -to-uri URLEncode -url-encode]]
-            [clojure.string :as str])
+  (:use     [hiccup.abstr   :only [ToString -to-str ToURI -to-uri URLEncode -url-encode]])
+  (:require [clojure.string :as   str])
   (:import java.net.URI
-           java.net.URLEncoder))
+           java.net.URLEncoder
+           clojure.lang.Named))
 
 (defn make-uri [s]
   (java.net.URI. s))
@@ -62,3 +63,6 @@
 
   Object
   (-url-encode [x encoding] (-url-encode (-to-str x) encoding)))
+
+(defn named? [thing]
+  (isa? (type thing) clojure.lang.Named))

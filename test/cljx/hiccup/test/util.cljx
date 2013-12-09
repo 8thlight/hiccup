@@ -1,8 +1,8 @@
 #+clj
 (ns hiccup.test.util
-  (:require [clojure.test    :refer :all]
-            [hiccup.util     :refer :all]
-            [hiccup.platform :refer [make-uri uri-equal?]]))
+  (:use clojure.test
+        hiccup.util
+        hiccup.platform))
 
 #+cljs
 (ns hiccup.test.util

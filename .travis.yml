@@ -1,6 +1,13 @@
 language: clojure
+
 lein: lein2
-script: lein2 with-profile dev:1.3:1.4:1.5 test
+
+before_script:
+  - lein cljx
+
+script:
+  - lein2 with-profile dev:1.3:1.4:1.5:cljs test
+
 jdk:
   - openjdk7
   - openjdk6

@@ -1,4 +1,4 @@
-(ns hiccup.compiler
+(ns hiccup.renderer
   (:use     [hiccup.util     :only [escape-html as-str]]
             [hiccup.platform :only [named?]])
   (:require [clojure.string  :as   str]))
@@ -8,7 +8,7 @@
 (defn- xml-mode? []
   (= *html-mode* :xml))
 
-(defn- end-tag []
+(defn end-tag []
   (if (xml-mode?) " />" ">"))
 
 (defn- xml-attribute [name value]
@@ -25,12 +25,11 @@
     :else
     (xml-attribute name value)))
 
-(defn- render-attr-map [attrs]
+(defn render-attr-map [attrs]
   (apply str
          (sort (map render-attribute attrs))))
 
-(def ^{:doc "A list of elements that need an explicit ending tag when rendered."
-       :private true}
+(def ^{:doc "A list of elements that need an explicit ending tag when rendered."}
   container-tags
   #{"a" "article" "aside" "b" "body" "canvas" "dd" "div" "dl" "dt" "em" "fieldset"
     "footer" "form" "h1" "h2" "h3" "h4" "h5" "h6" "head" "header" "hgroup" "html"
@@ -71,38 +70,6 @@
     (named? thing) (name thing)
     :else (str thing)))
 
-(defn- unevaluated?
-  "True if the expression has not been evaluated."
-  [expr]
-  (or (symbol? expr)
-      (and (seq? expr)
-           (not= (first expr) `quote))))
-
-(defn- form-name
-  "Get the name of the supplied form."
-  [form]
-  (if (and (seq? form) (symbol? (first form)))
-    (name (first form))))
-
-(declare compile-html)
-
-(defmulti compile-form
-  "Pre-compile certain standard forms, where possible."
-  {:private true}
-  form-name)
-
-(defmethod compile-form "for"
-  [[_ bindings body]]
-  `(apply str (for ~bindings ~(compile-html body))))
-
-(defmethod compile-form "if"
-  [[_ condition & body]]
-  `(if ~condition ~@(for [x body] (compile-html x))))
-
-(defmethod compile-form :default
-  [expr]
-  `(render-html ~expr))
-
 (defn render-element
   "Render an element vector as a HTML element."
   [element]
@@ -112,29 +79,3 @@
            (render-html content)
            "</" tag ">")
       (str "<" tag (render-attr-map attrs) (end-tag)))))
-
-(defn- literal?
-  "True if x is a literal value that can be rendered as-is."
-  [x]
-  (and (not (unevaluated? x))
-       (or (not (or (vector? x) (map? x)))
-           (every? literal? x))))
-
-(defn- compile-element [element]
-  `(render-element
-     [~(first element)
-      ~@(for [x (rest element)]
-          (if (vector? x)
-            (compile-element x)
-            x))]))
-
-(defn compile-seq
-  "Compile a sequence of data-structures into HTML."
-  [content]
-  (doall (for [expr content]
-           (cond
-             (vector? expr) (compile-element expr)
-             (seq? expr) (compile-form expr)
-             :else `(render-html ~expr)))))
-
-

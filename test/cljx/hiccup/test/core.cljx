@@ -1,7 +1,7 @@
 #+clj
 (ns hiccup.test.core
-  (:use clojure.test
-        hiccup.core))
+  (:use [clojure.test]
+        [hiccup.core :only [html]]))
 
 #+cljs
 (ns hiccup.test.core
@@ -25,6 +25,21 @@
   (testing "calling a function"
     (defn div-foo [] [:div#foo])
     (is (= (html (div-foo)) "<div id=\"foo\"></div>"))))
+
+#+clj
+(let [keyword-one-div (macroexpand '(html [:div]))
+      string-one-div (macroexpand '(html ["div"]))
+      symbol-one-div (macroexpand '(html ['div]))
+      div-foo-id (macroexpand '(html [:div#foo]))
+      div-foo-class (macroexpand '(html [:div.foo]))]
+  (deftest macroexpanding-tag-names
+    (testing "basic tags"
+      (is (= keyword-one-div '(clojure.core/str "<div></div>")))
+      (is (= string-one-div '(clojure.core/str "<div></div>")))
+      (is (= symbol-one-div '(clojure.core/str "<div></div>"))))
+    (testing "tag syntax sugar"
+      (is (= div-foo-id '(clojure.core/str "<div id=\"foo\"></div>")))
+      (is (= div-foo-class '(clojure.core/str "<div class=\"foo\"></div>"))))))
 
 (deftest tag-contents
   (testing "empty tags"
@@ -103,19 +118,11 @@
   (testing "literals"
     (is (= (html 1) "1")))
 
-  #+clj
   (testing "type hints"
     (let [string "x"]
       (is (= (html [:span ^String string]) "<span>x</span>"))
       (is (= (html string) "x"))
       (is (= (html ^String string) "x"))))
-
-  #+cljs
-  (testing "type hints"
-    (let [s "x"]
-      (is (= (html [:span ^string s]) "<span>x</span>"))
-      (is (= (html s) "x"))
-      (is (= (html ^string s) "x"))))
 
   (testing "optimized forms"
     (is (= (html [:ul (for [n (range 3)]

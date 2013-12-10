@@ -1,6 +1,8 @@
 (defproject org.clojars.mylesmegyesi/hiccup "1.1.1"
   :description "A fast library for rendering HTML in Clojure"
   :url "http://github.com/weavejester/hiccup"
+  :license {:name "Eclipse Public License"
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :source-paths   ["target/generated/src/clj" "src/clj" ]
   :resource-paths ["target/generated/src/cljs" "src/cljs"]

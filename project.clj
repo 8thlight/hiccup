@@ -27,7 +27,8 @@
                               "compile" ["cljsbuild" "once"]
                               "test" ["do" "clean" "," "compile"]}}}
 
-  :aliases {"cljsbuild" ["with-profile" "cljs" "cljsbuild"]}
+  :aliases {"cljsbuild" ["with-profile" "cljs" "cljsbuild"]
+            "cljx"      ["with-profile" "dev" "cljx"]}
 
   :codox {:exclude [hiccup.compiler hiccup.platform hiccup.abstr]
           :sources ["target/generated/src/clj" "src/clj"]

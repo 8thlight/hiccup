@@ -66,3 +66,6 @@
 
 (defn named? [thing]
   (isa? (type thing) clojure.lang.Named))
+
+(defn make-illegal-arguement-exception [msg]
+  (java.lang.IllegalArgumentException. msg))

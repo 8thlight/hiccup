@@ -66,3 +66,6 @@
 
 (defn- named? [thing]
   (satisfies? INamed thing))
+
+(defn make-illegal-arguement-exception [msg]
+  (js/Error. msg))

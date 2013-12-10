@@ -1,6 +1,6 @@
 (ns hiccup.renderer
   (:use     [hiccup.util     :only [escape-html as-str]]
-            [hiccup.platform :only [named?]])
+            [hiccup.platform :only [named? make-illegal-arguement-exception]])
   (:require [clojure.string  :as   str]))
 
 (def ^:dynamic *html-mode* :xml)
@@ -48,8 +48,8 @@
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
-  #+clj (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
-          (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
+  (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
+          (throw (make-illegal-arguement-exception (str tag " is not a valid element name."))))
   (let [[_ tag id class] (re-matches re-tag (as-str tag))
         tag-attrs        {:id id
                           :class (if class (str/replace class "." " "))}

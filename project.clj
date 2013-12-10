@@ -8,23 +8,24 @@
 
   :prep-tasks ["cljx"]
 
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.5.1"]]
-                   :plugins [[codox "0.6.4"]]}
+  :profiles {:dev {:dependencies [[org.clojure/clojure "1.5.1"]
+                                   [com.keminglabs/cljx "0.3.1"]]
+                   :plugins [[codox "0.6.4"]
+                             [com.keminglabs/cljx "0.3.1"] ]}
              :1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
 
              :cljs {:dependencies [[org.clojure/clojure "1.5.1"]
                                    [org.clojure/clojurescript "0.0-2080"]
-                                   [com.keminglabs/cljx "0.3.1"]
                                    [lein-cljsbuild "1.0.0"]
                                    [com.cemerick/clojurescript.test "0.2.1"]]
-                    :plugins [[lein-cljsbuild "1.0.0"]
-                              [com.keminglabs/cljx "0.3.1"]]
-                    :aliases {"test" ["do" ["cljsbuild" "clean"] ["cljsbuild" "once"]]}}}
+                    :plugins [[lein-cljsbuild "1.0.0"]]
+                    :aliases {"clean" ["cljsbuild" "clean"]
+                              "compile" ["cljsbuild" "once"]
+                              "test" ["do" "clean" "," "compile"]}}}
 
-  :aliases {"cljsbuild" ["with-profile" "cljs" "cljsbuild"]
-            "cljx"      ["with-profile" "cljs" "cljx"]}
+  :aliases {"cljsbuild" ["with-profile" "cljs" "cljsbuild"]}
 
   :codox {:exclude [hiccup.compiler hiccup.platform hiccup.abstr]
           :sources ["target/generated/src/clj" "src/clj"]

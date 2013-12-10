@@ -67,6 +67,9 @@
   #+clj (testing "vecs don't expand - error if vec doesn't have tag name"
     (is (thrown? IllegalArgumentException
                  (html (vector [:p "a"] [:p "b"])))))
+  #+cljs (testing "vecs don't expand - error if vec doesn't have tag name"
+    (is (thrown? js/Error
+                 (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
     (is (= (html [:div [:p]]) "<div><p /></div>"))
     (is (= (html [:div [:b]]) "<div><b></b></div>"))

@@ -86,7 +86,10 @@
     (is (= (html [:xml {:a "1", 'b "2", "c" "3"}])
            "<xml a=\"1\" b=\"2\" c=\"3\" />")))
   (testing "attribute values are escaped"
-    (is (= (html [:div {:id "\""}]) "<div id=\"&quot;\"></div>")))
+    (is (= (html [:div {:id "\""}]) "<div id=\"&quot;\"></div>"))
+    (is (= (html [:div {:id "\"foo\""}]) "<div id=\"&quot;foo&quot;\"></div>"))
+    (is (= (html [:div {:id (pr-str "foo")}]) "<div id=\"&quot;foo&quot;\"></div>"))
+    (is (= (html [:div {:id (pr-str {:foo "bar"})}]) "<div id=\"{:foo &quot;bar&quot;}\"></div>")))
   (testing "boolean attributes"
     (is (= (html [:input {:type "checkbox" :checked true}])
            "<input checked=\"checked\" type=\"checkbox\" />"))

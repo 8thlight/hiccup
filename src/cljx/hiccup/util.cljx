@@ -47,11 +47,11 @@
 (defn escape-html
   "Change special characters into HTML character entities."
   [text]
-  (.. (as-str text)
-    (replace "&"  "&amp;")
-    (replace "<"  "&lt;")
-    (replace ">"  "&gt;")
-    (replace "\"" "&quot;")))
+  (-> (as-str text)
+    (str/replace "&"  "&amp;")
+    (str/replace "<"  "&lt;")
+    (str/replace ">"  "&gt;")
+    (str/replace "\"" "&quot;")))
 
 (defmacro with-encoding
   "Sets a default encoding for URL encoding strings. Defaults to UTF-8."
